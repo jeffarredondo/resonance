@@ -14,7 +14,7 @@ Most LLM agents either have no memory between sessions or rely on simple retriev
 - **Lemmatization**: Automatically handles plurals and verb forms ("elephants" → "elephant")
 - **Persistent Storage**: All data saved locally using Kuzu (graph) and ChromaDB (semantic search)
 - **Multi-Agent Support**: Isolated graphs per agent prevent false confidence from shared associations
-- **Configurable Parameters**: Tune exploration rate, decay rate, and strength thresholds for different use cases
+- **Configurable Parameters**: Tune exploration rate, decay rate, and strength thresholds for different use cases  
 
 ## Installation
 ```bash
@@ -268,6 +268,105 @@ RAG retrieves similar documents. Resonance learns **relationships**:
 | Memory | No relationship memory | Remembers what connects to what |
 | Variety | Same results every time | Explores new connections 20% of the time |
 
+## Integration Example
+
+Resonance is designed to integrate seamlessly into any agent loop. Here's how to add persistent memory to your agent:
+```python
+from resonance import ResonanceMemory
+
+# Initialize memory for your agent
+memory = ResonanceMemory(
+    graph_path='./my_agent_memory',
+    exploration_rate=0.2
+)
+
+# Your agent loop
+while True:
+    # Get user input
+    user_input = input("User: ")
+    
+    # 1. RECALL - Get relevant context from memory
+    context = memory.recall(user_input)
+    
+    # 2. GENERATE - Use associations to enrich your response
+    # Pass context['associations'] to your agent/LLM
+    response = your_agent.generate(
+        prompt=user_input,
+        associations=context['associations'],
+        semantic_context=context['semantic_context']
+    )
+    
+    print(f"Agent: {response}")
+    
+    # 3. REMEMBER - Store this interaction
+    memory.remember_interaction(user_input, response)
+    memory.increment_generation()
+```
+
+### What Gets Passed to Your Agent
+
+The `recall()` method returns:
+```python
+{
+    'concepts': ['elephant', 'justice'],  # Extracted from query
+    'associations': {
+        'elephant': [
+            ('shollublip', 0.95),  # concept, confidence
+            ('large', 0.82)
+        ]
+    },
+    'semantic_context': [...],  # Related past conversations
+    'generation': 1205  # Current cycle count
+}
+```
+
+Use these associations to:
+- Inform your prompt construction
+- Provide context about user preferences
+- Surface related topics from past conversations
+- Build continuity across sessions
+
+### LLM Integration Example
+```python
+# Example with Anthropic API
+import anthropic
+
+client = anthropic.Anthropic()
+memory = ResonanceMemory(graph_path='./assistant')
+
+def chat(user_input):
+    # Get memory context
+    context = memory.recall(user_input)
+    
+    # Build enriched prompt
+    associations_str = "\n".join([
+        f"- {concept}: {', '.join([f'{assoc[0]} ({assoc[1]:.2f})' for assoc in assocs])}"
+        for concept, assocs in context['associations'].items()
+    ])
+    
+    system_prompt = f"""You are a helpful assistant with memory of past conversations.
+
+Relevant associations from memory:
+{associations_str}
+
+Use these to provide contextual, personalized responses."""
+    
+    # Generate
+    response = client.messages.create(
+        model="claude-sonnet-4-20250514",
+        messages=[{"role": "user", "content": user_input}],
+        system=system_prompt
+    )
+    
+    agent_response = response.content[0].text
+    
+    # Remember
+    memory.remember_interaction(user_input, agent_response)
+    memory.increment_generation()
+    
+    return agent_response
+```
+
 ## Testing
 
 Run the comprehensive test suite:
@@ -319,7 +418,7 @@ MIT
 
 ## Contributing
 
-Issues and pull requests welcome!
+No - but you're welcome to rip it off and improve it 
 
 ## Acknowledgments
 
