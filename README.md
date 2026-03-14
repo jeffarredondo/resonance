@@ -13,6 +13,8 @@ Most LLM agents either have no memory between sessions or rely on simple retriev
 - **Probabilistic Sampling**: 20% exploration rate prevents echo chambers by occasionally surfacing weaker associations
 - **Lemmatization**: Automatically handles plurals and verb forms ("elephants" → "elephant")
 - **Persistent Storage**: All data saved locally using Kuzu (graph) and ChromaDB (semantic search)
+- **Multi-Agent Support**: Isolated graphs per agent prevent false confidence from shared associations
+- **Configurable Parameters**: Tune exploration rate, decay rate, and strength thresholds for different use cases
 
 ## Installation
 ```bash
@@ -113,6 +115,86 @@ memory = ResonanceMemory(
     decay_rate=0.01,                      # Rate of recency decay
     spacy_model='en_core_web_sm',        # spaCy model for concept extraction
     debug=False                           # Enable debug output
+)
+```
+
+## Configuration Guidance
+
+### Multiple Agents
+
+**Different agents should use different graph paths:**
+
+Each agent type should maintain its own separate graph to avoid confusion from shared associations.
+```python
+# Chatbot agent
+chatbot = ResonanceMemory(
+    graph_path='./chatbot_graph'
+)
+
+# Code review agent
+reviewer = ResonanceMemory(
+    graph_path='./reviewer_graph'
+)
+
+# Research assistant
+researcher = ResonanceMemory(
+    graph_path='./researcher_graph'
+)
+```
+
+**Why separate graphs?**
+- Prevents Agent B from inheriting strong associations from Agent A's experience
+- Avoids false confidence in relationships one agent never learned
+- Each agent builds its own understanding through its own interactions
+
+### Exploration Rate Tuning
+
+The `exploration_rate` parameter (default: 0.2) controls exploitation vs exploration:
+
+**Low Exploration (0.05 - 0.1)**: Reliable, consistent
+- Customer support agents
+- Task-focused assistants
+- Production systems where reliability matters
+
+**Medium Exploration (0.15 - 0.25)**: Balanced (default)
+- General purpose assistants
+- Personal productivity agents
+- Most use cases
+
+**High Exploration (0.3 - 0.5)**: Creative, experimental
+- Research assistants
+- Creative writing tools
+- Discovery-focused applications
+
+### Common Configurations
+
+**Personal Assistant:**
+```python
+memory = ResonanceMemory(
+    graph_path='./personal_assistant',
+    exploration_rate=0.2,
+    decay_rate=0.005,  # Slower decay, longer memory
+    min_strength=0.15   # Higher threshold, only strong associations
+)
+```
+
+**Customer Support:**
+```python
+memory = ResonanceMemory(
+    graph_path='./customer_support',
+    exploration_rate=0.1,  # More consistent
+    decay_rate=0.02,       # Faster decay, recent issues more relevant
+    min_strength=0.1
+)
+```
+
+**Research/Discovery:**
+```python
+memory = ResonanceMemory(
+    graph_path='./research_agent',
+    exploration_rate=0.35,  # More exploration
+    decay_rate=0.01,
+    min_strength=0.05       # Lower threshold, surface weak connections
 )
 ```
 
