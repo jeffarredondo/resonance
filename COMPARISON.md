@@ -24,19 +24,21 @@ Model learns: "When I see patterns like turn 1 and 2, I should connect them in t
 ```
 
 ### Strengths
-- Improves coherence within a single conversation
+
+- Improves coherence by learning to use in-context examples effectively
 - Helps small models compete with larger ones on conversational tasks
-- No external infrastructure needed once trained
-- Works entirely within model weights
+- No traditional fine-tuning required - uses exemplar conversations in context
+- Works without external infrastructure
 
 ### Limitations
-- **No persistence**: Forgets everything when conversation ends
-- **Requires fine-tuning**: Need training data and compute
-- **Context window limited**: Can only reference what fits in context
-- **No cross-session learning**: Each conversation starts fresh
+
+- Manual example curation: Need to select good exemplar conversations to include
+- Context window limited: Can only reference examples that fit in context
+- No automatic decay: Can't forget outdated patterns without removing examples
+- Static after deployment: Adding new interaction patterns requires updating exemplars and re-prompting
 
 ### Use Case
-Making a small local model (like smaLLM) maintain coherent conversations without needing massive parameter counts.
+One-time improvement of a small local model's conversational coherence. Best when your interaction patterns are stable and you don't need frequent updates.
 
 ---
 
