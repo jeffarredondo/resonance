@@ -4,7 +4,7 @@
 
 | Approach | What It Does | Best For | Limitation |
 |----------|-------------|----------|------------|
-| **Memento** | Fine-tunes model to use in-context examples better | Improving coherence in small models | Doesn't persist across sessions |
+| **Memento** | Fine-tunes model to use in-context examples better | Improving coherence in small models | Persists in weights but no decay; expensive to update |
 | **RAG** | Retrieves similar documents to add to context | Finding relevant information from knowledge base | No relationship learning, static |
 | **Resonance** | Builds association graph that strengthens with use | Long-term relationship memory across sessions | Requires interaction to build up |
 
