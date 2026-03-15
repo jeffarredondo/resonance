@@ -10,11 +10,11 @@ setup(
     name="resonance-memory",
     version="0.1.0",
     author="Jeffrey Arredondo",
-    author_email="",  # Add your email if you want
+    author_email="",
     description="Harmonic associative memory system for LLM agents",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/resonance",  # Update with your repo
+    url="https://github.com/jeffarredondo/resonance", 
     packages=find_packages(),
     classifiers=[
         "Development Status :: 3 - Alpha",
