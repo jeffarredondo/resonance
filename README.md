@@ -525,3 +525,15 @@ Built with:
 - [Kuzu](https://kuzudb.com/) - Embedded graph database
 - [ChromaDB](https://www.trychroma.com/) - Vector database
 - [spaCy](https://spacy.io/) - NLP and concept extraction
+
+## Further Reading
+
+For those interested in the academic foundations of associative memory for LLM agents:
+
+**LLM Associative Memory Agents (LAMA)** - Inoshita (2026)
+- Paper: [arXiv:2601.12771](https://arxiv.org/abs/2601.12771)
+- Explores nationality prediction using recall-based reasoning with dual-agent architecture
+- Demonstrates that LLMs are more reliable at recalling concrete examples than abstract reasoning
+- Published January 2026
+
+Resonance extends similar associative memory concepts to general-purpose agent memory with temporal decay mechanics inspired by cognitive science.
