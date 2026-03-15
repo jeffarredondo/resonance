@@ -13,6 +13,7 @@ Most LLM agents either have no memory between sessions or rely on simple retriev
 - **Probabilistic Sampling**: 20% exploration rate prevents echo chambers by occasionally surfacing weaker associations
 - **Lemmatization**: Automatically handles plurals and verb forms ("elephants" → "elephant")
 - **Persistent Storage**: All data saved locally using Kuzu (graph) and ChromaDB (semantic search)
+  - **Note:** Kuzu may be swapped out for a different graphdb 
 - **Multi-Agent Support**: Isolated graphs per agent prevent false confidence from shared associations
 - **Configurable Parameters**: Tune exploration rate, decay rate, and strength thresholds for different use cases  
 
