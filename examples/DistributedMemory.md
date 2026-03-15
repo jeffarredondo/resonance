@@ -403,9 +403,9 @@ This is how Resonance becomes a **cloud service** instead of just a local librar
 
 ---
 
-**Status:** Future exploration
-**Priority:** After validating single-graph Resonance in production
-**Estimated Effort:** 3-6 months for full distributed implementation
-**Potential Impact:** Makes Resonance viable as a commercial service
+- **Status:** Future exploration
+- **Priority:** After validating single-graph Resonance in production
+- **Estimated Effort:** 3-6 months for full distributed implementation
+- **Potential Impact:** Makes Resonance viable as a commercial service
 
 ---
