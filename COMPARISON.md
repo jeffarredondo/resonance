@@ -134,7 +134,7 @@ Long-term agent memory that learns user patterns, project relationships, and dom
 **Memento (fine-tuned model):**
 - Uses in-context examples from current conversation
 - Might reference "you mentioned data science earlier"
-- Forgets after session ends
+- Forgets after N interactions
 
 **RAG:**
 - Searches knowledge base: "Python is a programming language..."
@@ -151,7 +151,7 @@ Long-term agent memory that learns user patterns, project relationships, and dom
 ### Scenario 2: 50 conversations later, user asks "What was that library I liked?"
 
 **Memento:**
-- Can't help - no memory of 50 conversations ago
+- Can't help - no memory of 50 conversations ago (continuously pruning)
 - Would need entire conversation history in context (impossible)
 
 **RAG:**
@@ -171,7 +171,8 @@ Long-term agent memory that learns user patterns, project relationships, and dom
 
 **Memento:**
 - Within a conversation, maintains consistency
-- Next session: Forgets your style preferences
+- As context window fills, old examples get dropped
+- No accumulation of "strength" - can't tell if you ALWAYS use a pattern vs mentioned it once
 
 **RAG:**
 - Retrieves past code examples
@@ -228,7 +229,6 @@ Query arrives
 - You have a small model that struggles with coherence
 - You can afford fine-tuning compute
 - You want better in-conversation performance
-- You don't need cross-session memory
 - [link to paper](https://arxiv.org/abs/2508.16153)
 
 ### Use RAG When:
