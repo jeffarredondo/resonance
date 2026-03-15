@@ -55,6 +55,89 @@ memory.increment_generation()
 
 ## How It Works
 
+### How Associations Guide Agent Behavior
+
+Resonance provides agents with learned context about what concepts connect in the user's mind. This enables more intelligent, personalized interactions.
+
+#### Without Memory (Cold Start Every Time)
+```
+User: "Help me with Python"
+Agent: "Sure! What would you like to do with Python?"
+User: "Data analysis"
+Agent: "What kind of data?"
+User: "The usual pandas stuff"
+Agent: "Which pandas functions?"
+```
+Every interaction starts from zero context.
+
+#### With Resonance Memory
+```
+User: "Help me with Python"
+
+Associations retrieved:
+  python → data_science [0.92]
+  python → pandas [0.85]
+  python → jupyter [0.73]
+
+Agent: "I can help with your Python data science work. 
+       Are you working in pandas again, or trying something new?"
+```
+
+The agent:
+- **Makes informed assumptions** (probably data science, not web development)
+- **Asks better questions** (specific to pandas, not generic)  
+- **Skips redundant clarification** (knows the user's typical context)
+- **Retrieves smarter** (if using web_search, searches "python pandas" not just "python")
+
+#### Confidence Scores Drive Behavior
+
+**Strong associations (>0.7)**: Safe to assume
+```python
+# python → pandas [0.92]
+# Agent can confidently suggest pandas-specific solutions
+```
+
+**Medium associations (0.3-0.7)**: Worth mentioning
+```python
+# python → plotly [0.45]  
+# Agent might ask: "Need visualization with plotly?"
+```
+
+**Weak associations (<0.3)**: Exploratory only
+```python
+# python → django [0.15]
+# Agent ignores unless user brings it up
+```
+
+#### Multi-Tool Integration
+
+Associations improve other tool usage:
+
+**Web Search:**
+```python
+# User asks about "authentication"
+# Associations: authentication → oauth [0.88], authentication → jwt [0.76]
+# Agent searches: "oauth jwt authentication" (not generic "authentication")
+```
+
+**Code Generation:**
+```python
+# User asks to "add error handling"  
+# Associations: error_handling → logging [0.91], error_handling → try_except [0.87]
+# Agent includes both patterns automatically
+```
+
+**Document Retrieval:**
+```python
+# User mentions "the project"
+# Associations: project → customer_dashboard [0.95]
+# Agent retrieves customer_dashboard docs, not all projects
+```
+
+#### The Result
+
+Agents that feel like they **know you** instead of treating every interaction as the first time you've met.
+
 ### Memory Mechanics
 
 **Association Strength:**
@@ -327,6 +410,16 @@ Use these associations to:
 - Surface related topics from past conversations
 - Build continuity across sessions
 
+### Interpreting Confidence Scores
+
+Associations come with confidence scores that indicate strength:
+- **High (>0.7)**: Strong established pattern - the user frequently connects these concepts
+- **Medium (0.3-0.7)**: Moderate connection - mentioned together sometimes  
+- **Low (<0.3)**: Weak or exploratory association - rarely connected
+
+When building your system prompt, explain to your agent that higher scores represent stronger learned patterns. The agent should use strong associations to inform its responses naturally, without explicitly saying "I remember that..." unless contextually appropriate.
+
+
 ### LLM Integration Example
 ```python
 # Example with Anthropic API
@@ -350,7 +443,12 @@ def chat(user_input):
 Relevant associations from memory:
 {associations_str}
 
-Use these to provide contextual, personalized responses."""
+These associations show concepts this user frequently connects together. The confidence scores indicate strength:
+- Scores above 0.7 are strong, established patterns
+- Scores 0.3-0.7 are moderate connections
+- Scores below 0.3 are weak, exploratory links
+
+Use these to provide contextual, personalized responses that reflect the user's patterns and preferences. Reference these connections naturally without explicitly mentioning "my memory" unless directly relevant."""
     
     # Generate
     response = client.messages.create(
